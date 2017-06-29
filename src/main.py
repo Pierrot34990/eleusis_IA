@@ -2,6 +2,7 @@
 # -*- coding:Utf8 -*-
 
 from webServiceFactory import WebServiceFactory
+from joueur import Joueur
 import time, json
 
 class Main:
@@ -39,6 +40,7 @@ class Main:
                                 #self.checkCards(self, result['partie']['selectedCards'])
                         else:
                             print ("Jouer en tant que joueur .")
+                            self.playCards(self, result['partie'])
                     else:
                         print("C'est pas à moi de jouer !!")
 
@@ -59,6 +61,12 @@ class Main:
         return response
 
     #def checkCards(self, cards):
+
+    def playCards(self, detailsPartie):
+        IA = Joueur()
+        cards = IA.jouerCartes(detailsPartie)
+        return cards
+
 
 
     def getCardsTest(self):
