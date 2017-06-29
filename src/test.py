@@ -50,6 +50,7 @@ class Main:
     # *                                                                                                         *
     # ***********************************************************************************************************
 
+    # TODO : Générer une règle random et vérifier si la partie est déjà commencée ou pas pour ne pas générer à chaque tour de joueur une nouvelle règle
 
     # Fonction qui verifie si toutes les couleurs correspondent a celle imposee par la regle
     def checkAllColors(self,item_dict,ruleColor):
