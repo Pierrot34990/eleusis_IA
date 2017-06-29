@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import json
+from random import randint
 
 class Main:
 
@@ -8,32 +9,46 @@ class Main:
     peer = ['yes','no']                       # Pair ou impair
     cardType = ['S', 'D', 'C', 'H']           # Type de la carte
     colorsPlayed = []                         # Couleur jouee
-    colorsChecked = 0                         # Nomnbre de couleurs verifiees qui correspondent a la regle
+    colorsChecked = 0                         # Nomnbre de couleurs verifiees dans les cartes jouees qui correspondent a la regle
     numberCardsToPut = [1,2,3,4,5]            # Nombre de cartes posees par le joueur
-    redundancy = [0,1,2,3,4]                  # Nombre de cartes intermediaires a retrouver entre chaque bonnes cartes impose par la regle
+    redundancy = [0,1,2,3,4]                  # Nombre de cartes intermediaires a retrouver entre chaque bonnes cartes imposees par la regle
     alternatingColors = ['yes', 'no']         # Alternance des couleurs ex: une rouge puis une noir etc ...
-    # TODO : Somme des numeros de cartes qui doit etre superieur a un certain nombre
+    alternance  = ['yes', 'no']               # Alternance a retrouver dans les cartes a jouer
+    totalNum = 0                              # Somme des numeros de cartes qui doit etre superieur a un certain nombre
+    numMin = 0                                # Numero de carte minimum a retrouver dans les cartes jouees
+    finalCheck = []                           # Liste contenant les resultats de toutes les fonctions afin de savoir si au moins une regle n'a pas ete respectee
 
     # Fonction qui retourne des cartes de test
     def getCardsTest(self):
-        data = json.dumps({'cards':[{'color': 'H','number': 2}, {'color':'C','number':3}]})
+        data = json.dumps({'cards':[{'color': 'H','number': 2}, {'color':'C','number':3}, {'color':'C','number':2}]})
         return data
 
     # Fonction qui retourne un exemple type de regle a des fins de test
     def getFakeRule(self):
-        data = {'numberCardsToPut':2,'color':'noir','numCard':None,'cardType':None,'redundancy':0, 'alternating_colors':'yes'}
+        data = {'numberCardsToPut':3,'color':'noir','numCard':None,'cardType':None,'redundancy':0, 'alternating_colors':'no', 'totalNum': 7}
         return data
 
-    # Fonction principale qui fait appel a toutes les fonctions de verification implementees en dessous
+    # ***********************************************************************************************************
+    # *    Fonction principale qui fait appel a toutes les fonctions de verification implementees en dessous    *
+    # ***********************************************************************************************************
     def checkRules(self):
         cardsPlayed = self.getCardsTest()
         item_dict = json.loads(cardsPlayed)
         rule = self.getFakeRule()
         ruleColor = rule['color']
         nbCardsToPut = rule['numberCardsToPut']
-        #print self.checkAllColors(item_dict,ruleColor)
-        #print self.checkNbCards(item_dict,nbCardsToPut)
-        print self.checkAltertatingColor(rule,item_dict)
+        self.finalCheck.append(self.checkAllColors(item_dict,ruleColor))
+        self.finalCheck.append(self.checkNbCards(item_dict,nbCardsToPut))
+        self.finalCheck.append(self.checkAltertatingColor(rule,item_dict))
+        self.finalCheck.append(self.checkTotalNum(item_dict,rule))
+
+        if False in self.finalCheck:
+            print "Regles non respectées"
+        else:
+            print "Regles respectées"
+    # ***********************************************************************************************************
+    # *                                                                                                         *
+    # ***********************************************************************************************************
 
 
     # Fonction qui verifie si toutes les couleurs correspondent a celle imposee par la regle
@@ -72,12 +87,22 @@ class Main:
         else:
             return "Pas d'alternance de couleurs défini dans les règles"
 
+    # Fonction qui attribue une liste des couleurs retrouvee dans les cartes jouees dans la variable "colorsPlayed"
     def getColorsPlayed(self,item_dict):
         for x in item_dict['cards']:
             if (x['color'] == 'D') or (x['color'] == 'H'):
                 self.colorsPlayed.append('rouge')
             elif (x['color'] == 'C') or (x['color'] == 'S'):
                 self.colorsPlayed.append('noir')
+
+    # Fonction qui verifie si la somme des numeros de cartes correspond au numero impose par la regle
+    def checkTotalNum(self,item_dict,rule):
+        for i in item_dict['cards']:
+            self.totalNum += i['number']
+        if self.totalNum == rule['totalNum']:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     m = Main()
