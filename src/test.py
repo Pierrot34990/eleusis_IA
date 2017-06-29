@@ -26,8 +26,8 @@ class Main:
         rule = self.getFakeRule()
         ruleColor = rule['color']
         nbCardsToPut = rule['numberCardsToPut']
-        self.checkAllColors(self,item_dict,ruleColor)
-        self.checkNbCards(self,item_dict,nbCardsToPut)
+        print self.checkAllColors(item_dict,ruleColor)
+        print self.checkNbCards(item_dict,nbCardsToPut)
 
 
     def checkAllColors(self,item_dict,ruleColor):
@@ -39,14 +39,16 @@ class Main:
                 for j in self.colorPlayed:
                     if j == ruleColor:
                         self.colorsChecked += 1
-            else:
-                color = 'noir'
-
-    def checkNbCards(sefl,item_dict,nbCardsToPut):
-        if len(item_dict['cards']) == nbCardsToPut:
-            return True
+        if len(self.colorPlayed) == len(item_dict['cards']):
+            return "Bonne couleurs"
         else:
-            return False
+            return "Mauvaises couleurs"
+
+    def checkNbCards(self,item_dict,nbCardsToPut):
+        if len(item_dict['cards']) == nbCardsToPut:
+            return "Bon nb de cartes"
+        else:
+            return "Mauvais nombre de cartes"
 
 if __name__ == '__main__':
     m = Main()
