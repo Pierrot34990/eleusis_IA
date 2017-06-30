@@ -39,6 +39,10 @@ class Main:
         data = {'numberCardsToPut':3,'color':'noir','numCard':None,'cardType':'S','redundancy':0, 'alternating_colors':0, 'totalNum': 7}
         return data
 
+    # Fontion qui retourne une regle aleatoire
+    def getRandomRule(self):
+        data = {'numberCardsToPut':randint(1,5),'color':'noir','numCard':None,'cardType':'S','redundancy':0, 'alternating_colors':0, 'totalNum': 7}
+
     # ***********************************************************************************************************
     # *    Fonction principale qui fait appel a toutes les fonctions de verification implementees en dessous    *
     # ***********************************************************************************************************
