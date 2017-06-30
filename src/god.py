@@ -3,7 +3,7 @@
 import json
 from random import randint
 
-class Main:
+class God:
 
     numCard = [1,2,3,4,5,6,7,8,9,10,11,12,13] # Numero de la carte
     peer = 0                                  # Pair ou impair
@@ -36,12 +36,13 @@ class Main:
 
     # Fonction qui retourne un exemple type de regle a des fins de test
     def getFakeRule(self):
-        data = {'numberCardsToPut':3,'color':'noir','numCard':None,'cardType':'S','redundancy':0, 'alternating_colors':0, 'totalNum': 7}
+        data = {'numberCardsToPut':3,'color':0,'numCard':None,'cardType':randint(1,4),'redundancy':0, 'alternating_colors':0, 'totalNum': 7}
         return data
 
     # Fontion qui retourne une regle aleatoire
     def getRandomRule(self):
-        data = {'numberCardsToPut':randint(1,5),'color':'noir','numCard':None,'cardType':'S','redundancy':0, 'alternating_colors':0, 'totalNum': 7}
+        data = {'numberCardsToPut':randint(1,5),'color':randint(0, 1),'numCard':randint(1,13),'cardType':randint(1,4),'redundancy':randint(0,4), 'alternating_colors':randint(0,1), 'totalNum': randint(1,100)}
+        return data
 
     # ***********************************************************************************************************
     # *    Fonction principale qui fait appel a toutes les fonctions de verification implementees en dessous    *
@@ -49,7 +50,8 @@ class Main:
     def checkRules(self):
         cardsPlayed = self.getCardsTest()
         item_dict = json.loads(cardsPlayed)
-        rule = self.getFakeRule()
+        #rule = self.getFakeRule()
+        rule = self.getRandomRule()
         ruleColor = rule['color']
         nbCardsToPut = rule['numberCardsToPut']
         self.finalCheck.append(self.checkAllColors(item_dict,ruleColor))
@@ -104,12 +106,13 @@ class Main:
             return "Pas d'alternance de couleurs défini dans les règles"
 
     # Fonction qui attribue une liste des couleurs retrouvee dans les cartes jouees dans la variable "colorsPlayed"
+    # Rouge = 1, Noir = 0
     def getColorsPlayed(self,item_dict):
         for x in item_dict['cards']:
-            if (x['color'] == 'D') or (x['color'] == 'H'):
-                self.colorsPlayed.append('rouge')
-            elif (x['color'] == 'C') or (x['color'] == 'S'):
-                self.colorsPlayed.append('noir')
+            if (x['color'] == 2) or (x['color'] == 4):
+                self.colorsPlayed.append(1)
+            elif (x['color'] == 3) or (x['color'] == 1):
+                self.colorsPlayed.append(0)
 
     # Fonction qui verifie si la somme des numeros de cartes correspond au numero impose par la regle
     def checkTotalNum(self,item_dict,rule):
@@ -133,18 +136,18 @@ class Main:
             if i == 'numberCardsToPut':
                 ruleString += "Nombre de cartes à poser : " + str(rule[i]) + "\n"
             if i == 'cardType':
-                if rule[i] == 'S':
+                if rule[i] == 1:
                     ruleString += "Type de cartes : Pic \n"
-                if rule[i] == 'D':
+                if rule[i] == 2:
                     ruleString += "Type de cartes : Carreau \n"
-                if rule[i] == 'C':
+                if rule[i] == 3:
                     ruleString += "Type de cartes : Trèfle \n"
-                if rule[i] == 'H':
+                if rule[i] == 4:
                     ruleString += "Type de cartes : Coeur \n"
             if i == 'alternating_colors':
                 if rule[i] == 1:
                     ruleString += "Alternance des couleurs : Oui \n"
-                elif rule[i] == 1:
+                elif rule[i] == 0:
                     ruleString += "Alternance des couleurs : Non \n"
             if i == 'totalNum':
                 if rule[i] != None:
@@ -153,6 +156,6 @@ class Main:
         print ruleString
 
 if __name__ == '__main__':
-    m = Main()
-    m.displayRule(m.getFakeRule())
+    m = God()
+    m.displayRule(m.getRandomRule())
     m.checkRules()
