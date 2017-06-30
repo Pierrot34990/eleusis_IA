@@ -3,12 +3,14 @@
 
 from webServiceFactory import WebServiceFactory
 from joueur import Joueur
+from god import God
 import time, json
 
 class Main:
 
     idJoueur = 0
     numJoueur = 0
+    god = God()
     CONST_DIEUX_INVENTE_UNE_REGLE = 0
     CONST_DIEUX_VERIFIE_DES_CARTES = 1
     CONST_DIEUX_DIT_SI_PROPHETE = 2
@@ -19,7 +21,6 @@ class Main:
 
         while endGame == False:
             result = self.turn(self.idJoueur)
-
             if result['commencerPartie'] == True and ('gameAlreadyStart' in result) and result['gameAlreadyStart'] == False:
                 self.numJoueur = self.ready(self.idJoueur)
             else:
@@ -31,12 +32,22 @@ class Main:
                         if result['numJoueur'] == 'god':
                             print ("Jouer en tant que Dieu .")
                             if result['godRole'] == self.CONST_DIEUX_INVENTE_UNE_REGLE:
-                                print ("Jouer en tant que Dieu, J'invente une règle.")
+                                rule = self.god.getRandomRule()
+                                print ("Jouer en tant que Dieu, J'invente une règle...")
+                                print(self.god.displayRule(rule))
                             elif result['godRole'] == self.CONST_DIEUX_DIT_SI_PROPHETE:
                                 print("Jouer en tant que Dieu, Je dit prophète.")
+                                if self.god.checkIfProphet() == True:
+                                    print("True")
+                                else:
+                                    print("False")
                             elif result['godRole'] == self.CONST_DIEUX_VERIFIE_DES_CARTES:
                                 print("Jouer en tant que Dieu, Je vérifie les cartes.")
-                                print('CARTES TEST = ' + self.getCardsTest())
+                                if self.god.checkRules() == False:
+                                    return("False")
+                                else:
+                                    print("True")
+
                                 #self.checkCards(self, result['partie']['selectedCards'])
                         else:
                             print ("Jouer en tant que joueur .")
@@ -60,14 +71,10 @@ class Main:
         response = w.webServiceReady(idPlayer)
         return response
 
-    #def checkCards(self, cards):
-
     def playCards(self, detailsPartie):
         IA = Joueur()
         cards = IA.jouerCartes(detailsPartie)
         return cards
-
-
 
     def getCardsTest(self):
         return json.dumps({'color': 'S','number': 2})

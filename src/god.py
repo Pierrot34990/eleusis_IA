@@ -60,9 +60,9 @@ class God:
         self.finalCheck.append(self.checkTotalNum(item_dict,rule))
 
         if False in self.finalCheck:
-            print "Regles non respectées"
+            return False
         else:
-            print "Regles respectées"
+            return True
     # ***********************************************************************************************************
     # *                                                                                                         *
     # ***********************************************************************************************************
@@ -153,7 +153,17 @@ class God:
                 if rule[i] != None:
                     ruleString += "Somme totale des numéros de cartes : " + str(rule[i]) + " \n"
 
-        print ruleString
+        return ruleString
+
+    # Fonction qui verifie si un joueur est prophete ou non
+    # Dans le cas où dans le deck du joueur en question aucune carte n'est bonne alors il est prophete (True)
+    # sinon il ne l'est pas (False)
+    def checkIfProphet(self):
+        checkedDeck = self.checkRules()
+        if checkedDeck == False:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     m = God()

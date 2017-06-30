@@ -1,3 +1,5 @@
+# -*- coding:Utf8 -*-
+
 from math import *
 import json
 
