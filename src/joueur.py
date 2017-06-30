@@ -50,16 +50,21 @@ class Joueur:
     #couleurPareil = 0  #couleur N+1 = couleur N
     #figureDif = 0       #trefle, coeur, pique, carreau N+1 != figure N
     #figurePareil = 0    #trefle, coeur, pique, carreau N+1 = figure N
-    sommeNumero = 0     #somme des cartes = 9 par exemple
+    somme = 0
+    valSomme = 0
+    ancSomme = 0
+    valAncSomme = 0
+    sommeCarte = [somme, valSomme, ancSomme, valAncSomme]
 
     #sous-tableaux de score
     scoreNbCartes = [lotDe1,lotDe2,lotDe3,lotDe4, lotDe5]
     scoreUnLot = [simple, double, triple, quadruple, suiteCroissante, suiteDecroissante, couleur1sur2, memeCouleur]
     scoreCartes = [rouge, noir, pair, impaire, trefles, coeur, piques, carreau, un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze, douze, treize]
-    #scoreSuiteLots = [carteSup, carteInf, couleurDif, couleurPareil, figureDif, figurePareil, sommeNumero]
+
+    #scoreSuiteLots = [carteSup, carteInf, couleurDif, couleurPareil, figureDif, figurePareil, sommeCarte]
 
     #tableau final
-    score = [scoreNbCartes, scoreUnLot, scoreCartes]
+    score = [scoreNbCartes, scoreUnLot, scoreCartes]#,scoreSuiteLots]
 
     def jouerCartes(self, detailsPartie):
         partie = json.loads(detailsPartie)
@@ -368,3 +373,25 @@ class Joueur:
                 elif sens == '-':
                     self.scoreUnLot[7] -= 1
 
+    def calculScoreSommeNumero(self, lot, ancienLot, sens):
+        total = 0
+        totalAncien = 0
+        for carte in lot:
+            total += carte['number']
+        for carte in ancienLot:
+            totalAncien += carte['number']
+        if total == totalAncien:
+            if self.sommeCarte[0] == total:
+                if sens == '+':
+                    self.sommeCarte[1] += 1
+                elif sens == '-':
+                    self.sommeCarte[1] -= 1
+            else:
+                if sens == '+':
+                    self.sommeCarte[1] = 1
+                elif sens == '-':
+                    self.sommeCarte[1] = -1
+            self.sommeCarte[0] = total
+        if self.sommeCarte[1] > self.sommeCarte[3]:
+            self.sommeCarte[3] = self.sommeCarte[1]
+            self.sommeCarte[2] = self.sommeCarte[0]
