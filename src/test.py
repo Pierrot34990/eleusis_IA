@@ -6,14 +6,14 @@ from random import randint
 class Main:
 
     numCard = [1,2,3,4,5,6,7,8,9,10,11,12,13] # Numero de la carte
-    peer = ['yes','no']                       # Pair ou impair
+    peer = 0                                  # Pair ou impair
     cardType = ['S', 'D', 'C', 'H']           # Type de la carte
     colorsPlayed = []                         # Couleur jouee
     colorsChecked = 0                         # Nomnbre de couleurs verifiees dans les cartes jouees qui correspondent a la regle
     numberCardsToPut = [1,2,3,4,5]            # Nombre de cartes posees par le joueur
     redundancy = [0,1,2,3,4]                  # Nombre de cartes intermediaires a retrouver entre chaque bonnes cartes imposees par la regle
-    alternatingColors = ['yes', 'no']         # Alternance des couleurs ex: une rouge puis une noir etc ...
-    alternance  = ['yes', 'no']               # Alternance a retrouver dans les cartes a jouer
+    alternatingColors = 0                     # Alternance des couleurs ex: une rouge puis une noir etc ...
+    alternance = 0                            # Alternance a retrouver dans les cartes a jouer
     totalNum = 0                              # Somme des numeros de cartes qui doit etre superieur a un certain nombre
     numMin = 0                                # Numero de carte minimum a retrouver dans les cartes jouees
     finalCheck = []                           # Liste contenant les resultats de toutes les fonctions afin de savoir si au moins une regle n'a pas ete respectee
@@ -21,11 +21,22 @@ class Main:
     # Fonction qui retourne des cartes de test
     def getCardsTest(self):
         data = json.dumps({'cards':[{'color': 'H','number': 2}, {'color':'C','number':3}, {'color':'C','number':2}]})
+        item_dict = json.loads(data)
+        for i in item_dict['cards']:
+            if i['color'] == 'S':
+                i['color'] = 1
+            elif i['color'] == 'D':
+                i['color'] = 2
+            elif i['color'] == 'C':
+                i['color'] = 3
+            elif i['color'] == 'H':
+                i['color'] = 4
+
         return data
 
     # Fonction qui retourne un exemple type de regle a des fins de test
     def getFakeRule(self):
-        data = {'numberCardsToPut':3,'color':'noir','numCard':None,'cardType':None,'redundancy':0, 'alternating_colors':'no', 'totalNum': 7}
+        data = {'numberCardsToPut':3,'color':'noir','numCard':None,'cardType':'S','redundancy':0, 'alternating_colors':0, 'totalNum': 7}
         return data
 
     # ***********************************************************************************************************
@@ -76,7 +87,7 @@ class Main:
 
         nbAlternance = 0
 
-        if rule['alternating_colors'] == 'yes':
+        if rule['alternating_colors'] == 1:
             self.getColorsPlayed(item_dict)
             for indx,val in enumerate(self.colorsPlayed[1:], start=1):
                 if (indx < len(self.colorsPlayed)) and (val != self.colorsPlayed[indx-1]):
@@ -105,6 +116,39 @@ class Main:
         else:
             return False
 
+    # Fonction qui affiche la règle en français
+    def displayRule(self,rule):
+        ruleString = "REGLES DU JEU \n"
+        for i in rule:
+            if i == 'redundancy':
+                ruleString += "Redondance de : " + str(rule[i]) + "\n"
+            if i == 'color':
+                ruleString += "couleurs : " + str(rule[i]) + "\n"
+            if i == 'numCard':
+                ruleString += "Numéro de carte : " + str(rule[i]) + "\n"
+            if i == 'numberCardsToPut':
+                ruleString += "Nombre de cartes à poser : " + str(rule[i]) + "\n"
+            if i == 'cardType':
+                if rule[i] == 'S':
+                    ruleString += "Type de cartes : Pic \n"
+                if rule[i] == 'D':
+                    ruleString += "Type de cartes : Carreau \n"
+                if rule[i] == 'C':
+                    ruleString += "Type de cartes : Trèfle \n"
+                if rule[i] == 'H':
+                    ruleString += "Type de cartes : Coeur \n"
+            if i == 'alternating_colors':
+                if rule[i] == 1:
+                    ruleString += "Alternance des couleurs : Oui \n"
+                elif rule[i] == 1:
+                    ruleString += "Alternance des couleurs : Non \n"
+            if i == 'totalNum':
+                if rule[i] != None:
+                    ruleString += "Somme totale des numéros de cartes : " + str(rule[i]) + " \n"
+
+        print ruleString
+
 if __name__ == '__main__':
     m = Main()
+    m.displayRule(m.getFakeRule())
     m.checkRules()
