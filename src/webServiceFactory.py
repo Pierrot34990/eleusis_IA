@@ -6,7 +6,7 @@ import requests, json
 class WebServiceFactory:
 
     def __init__(self):
-        self.URL_CONNECT = "http://localhost:8888/eleusis_IA/web/app_dev.php/"
+        self.URL_CONNECT = "http://127.0.0.1:8000/"
 
     def webServiceConnect(self):
         response = requests.get(self.URL_CONNECT + 'connect/pierre')
