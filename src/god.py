@@ -23,13 +23,13 @@ class God:
         data = json.dumps({'cards':[{'color': 'H','number': 2}, {'color':'C','number':3}, {'color':'C','number':2}]})
         item_dict = json.loads(data)
         for i in item_dict['cards']:
-            if i['color'] == 'S':
+            if i['color'] == 'noir':
                 i['color'] = 1
-            elif i['color'] == 'D':
+            elif i['color'] == 'rouge':
                 i['color'] = 2
-            elif i['color'] == 'C':
+            elif i['color'] == 'noir':
                 i['color'] = 3
-            elif i['color'] == 'H':
+            elif i['color'] == 'rouge':
                 i['color'] = 4
 
         return data
@@ -41,14 +41,23 @@ class God:
 
     # Fontion qui retourne une regle aleatoire
     def getRandomRule(self):
-        data = {'numberCardsToPut':randint(1,5),'color':randint(0, 1),'numCard':randint(1,13),'cardType':randint(1,4),'redundancy':randint(0,4), 'alternating_colors':randint(0,1), 'totalNum': randint(1,100)}
+        data = {'numberCardsToPut':randint(1,5),'color':randint(1, 4),'numCard':randint(1,13),'cardType':randint(1,4),'redundancy':randint(0,4), 'alternating_colors':randint(0,1), 'totalNum': randint(1,100)}
+        if data['color'] == 1:
+            data['color'] = 'noir'
+        elif data['color'] == 2:
+            data['color'] = 'rouge'
+        elif data['color'] == 3:
+            data['color'] = 'noir'
+        elif data['color'] == 4:
+            data['color'] = 'rouge'
+
         return data
 
     # ***********************************************************************************************************
     # *    Fonction principale qui fait appel a toutes les fonctions de verification implementees en dessous    *
     # ***********************************************************************************************************
-    def checkRules(self):
-        cardsPlayed = self.getCardsTest()
+    def checkRules(self, cardsPlayed):
+        #cardsPlayed = self.getCardsTest()
         item_dict = json.loads(cardsPlayed)
         #rule = self.getFakeRule()
         rule = self.getRandomRule()
@@ -130,7 +139,7 @@ class God:
             if i == 'redundancy':
                 ruleString += "Redondance de : " + str(rule[i]) + "\n"
             if i == 'color':
-                ruleString += "couleurs : " + str(rule[i]) + "\n"
+                ruleString += "Couleur : " + str(rule[i]) + "\n"
             if i == 'numCard':
                 ruleString += "Numéro de carte : " + str(rule[i]) + "\n"
             if i == 'numberCardsToPut':
@@ -164,6 +173,19 @@ class God:
             return True
         else:
             return False
+
+    def getColorsToNumber(self, item_dict):
+        for i in item_dict['cards']:
+            if i['color'] == 'S':
+                i['color'] = 1
+            elif i['color'] == 'D':
+                i['color'] = 2
+            elif i['color'] == 'C':
+                i['color'] = 3
+            elif i['color'] == 'H':
+                i['color'] = 4
+
+        return item_dict
 
 if __name__ == '__main__':
     m = God()
