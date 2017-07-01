@@ -45,6 +45,48 @@ class Joueur:
     douze = 0       #dame
     treize = 0      #roi
 
+
+#Variable main joueur
+    # nombre de cartes dans une main jouée
+    lotDe1Main = 0
+    lotDe2Main = 0
+    lotDe3Main = 0
+    lotDe4Main = 0
+    lotDe5Main = 0
+
+    # variables concernant un lot
+    simpleMain = 0  # une carte pareil
+    doubleMain = 0  # deux cartes pareils...
+    tripleMain = 0
+    quadrupleMain = 0
+    suiteCroissanteMain = 0
+    suiteDecroissanteMain = 0
+    couleur1sur2Main = 0  # une rouge puis une noir ou inversement
+    memeCouleurMain = 0
+
+    # Variables concernant une carte d'un lot
+    rougeMain = 0
+    noirMain = 0
+    pairMain = 0
+    impaireMain = 0
+    treflesMain = 0
+    coeurMain = 0
+    piquesMain = 0
+    carreauMain = 0
+    unMain = 0
+    deuxMain = 0
+    troisMain = 0
+    quatreMain = 0
+    cinqMain = 0
+    sixMain = 0
+    septMain = 0
+    huitMain = 0
+    neufMain = 0
+    dixMain = 0
+    onzeMain = 0  # vallet
+    douzeMain = 0  # dame
+    treizeMain = 0  # roi
+
     #Variables concernant les cartes de deux lots distincts
     #carteSup = 0        #carte N+1 > carte N
     #carteInf = 0        #carte N+1 < carte N
@@ -56,231 +98,285 @@ class Joueur:
     valSomme = 0
     ancSomme = 0
     valAncSomme = 0
-    sommeCarte = [somme, valSomme, ancSomme, valAncSomme]
+    sommeCarteJoue = [somme, valSomme, ancSomme, valAncSomme]
 
-    #sous-tableaux de score
-    scoreNbCartes = [lotDe1,lotDe2,lotDe3,lotDe4, lotDe5]
-    scoreUnLot = [simple, double, triple, quadruple, suiteCroissante, suiteDecroissante, couleur1sur2, memeCouleur]
-    scoreCartes = [rouge, noir, pair, impaire, trefles, coeur, piques, carreau, un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze, douze, treize]
+    #sous-tableaux de score des cartes jouées
+    scoreNbCartesJoue = [lotDe1,lotDe2,lotDe3,lotDe4, lotDe5]
+    scoreUnLotJoue = [simple, double, triple, quadruple, suiteCroissante, suiteDecroissante, couleur1sur2, memeCouleur]
+    scoreCartesJoue = [rouge, noir, pair, impaire, trefles, coeur, piques, carreau, un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze, douze, treize]
+
+    # sous-tableaux de score des cartes dans ma main
+    scoreNbCartesMain = [lotDe1Main, lotDe2Main, lotDe3Main, lotDe4Main, lotDe5Main]
+    scoreUnLotMain = [simpleMain, doubleMain, tripleMain, quadrupleMain, suiteCroissanteMain, suiteDecroissanteMain, couleur1sur2Main, memeCouleurMain]
+    scoreCartesMain = [rougeMain, noirMain, pairMain, impaireMain, treflesMain, coeurMain, piquesMain, carreauMain, unMain, deuxMain, troisMain, quatreMain, cinqMain, sixMain, septMain, huitMain, neufMain, dixMain, onzeMain, douzeMain, treizeMain]
 
     #scoreSuiteLots = [carteSup, carteInf, couleurDif, couleurPareil, figureDif, figurePareil, sommeCarte]
 
     #tableau final
-    score = [scoreNbCartes, scoreUnLot, scoreCartes]#,scoreSuiteLots]
+    scoreJoue = [scoreNbCartesJoue, scoreUnLotJoue, scoreCartesJoue]#,scoreSuiteLots]
+
+    def bonneCarte(self):
+        cartes = [[{"color":"C","number":"2"},{"color":"S","number":"1"},{"color":"H","number":"8"}],[{"color":"H","number":"5"},{"color":"D","number":"10"}],[{"color":"S","number":"12"},{"color":"H","number":"11"},{"color":"D","number":"13"}],[{"color":"S","number":"6"},{"color":"D","number":"6"},{"color":"S","number":"6"}]]
+        return cartes
+
+
+
+    def mauvaiseCarte(self):
+        cartes = [[{"color":"C","number":"3"},{"color":"D","number":"4"}],[{"color":"S","number":"9"}],[{"color":"S","number":"6"}],[{"color":"S","number":"9"}],[{"color":"C","number":"3"},{"color":"D","number":"4"}]]
+        return cartes
+
+    def main(self):
+        return [{"color":"C","number":"3"},{"color":"D","number":"4"},{"color":"D","number":"4"},{"color":"S","number":"1"},{"color":"H","number":"8"}]
 
     def jouerCartes(self, detailsPartie):
         partie = json.loads(detailsPartie)
-        self.analyseBonneCartes(partie['bonnes-cartes'])
-        self.analyseMauvaiseCartes(partie['mauvaises-cartes'])
-        cartes = self.choisirCartes()
+        #self.analyseBonneCartes(partie['bonnes-cartes'])
+        self.analyseBonneCartes(self.bonneCarte(), 0)
+        #self.analyseMauvaiseCartes(partie['mauvaises-cartes'])
+        self.analyseMauvaiseCartes(self.mauvaiseCarte(), 0)
+
+        cartes = self.choisirCartes(partie['deckJ1'])
         if cartes == None:
             return 'prophete'
         return cartes
 
-    def analyseBonneCartes(self, lotsDeCartes):
+    def analyseBonneCartes(self, lotsDeCartes, joueur):
         premierLot = 1
         for lot in lotsDeCartes:
-            self.calculScoreNbCartes(lot, '+')    #score du nb de carte dans un lot joue
-            self.calculScoreUnLot(lot, '+')           #score du tableau scoreUnLot
+            self.calculScoreNbCartes(lot, '+', joueur)    #score du nb de carte dans un lot joue
+            self.calculScoreUnLot(lot, '+', joueur)           #score du tableau scoreUnLot
             for carte in lot:
-                self.calculScoreRougeNoir(carte, '+')    #score du tableau scoreCarte
-                self.calculScoreParite(carte, '+')
-                self.calculScoreFigure(carte, '+')
-                self.calculScoreNumero(carte, '+')
+                self.calculScoreRougeNoir(carte, '+', joueur)    #score du tableau scoreCarte
+                self.calculScoreParite(carte, '+', joueur)
+                self.calculScoreFigure(carte, '+', joueur)
+                self.calculScoreNumero(carte, '+', joueur)
             if premierLot == 1:
                 premierLot = 0
                 ancienLot = lot
             else:
-                self.calculScoreSommeNumero(lot, ancienLot, '+') #pas encore commencer
+                self.calculScoreSommeNumero(lot, ancienLot, '+', joueur) #pas encore commencer
                 ancienLot = lot
 
 
 
-    def analyseMauvaiseCartes(self, lotsDeCartes):
+    def analyseMauvaiseCartes(self, lotsDeCartes, joueur):
         premierLot = 1
         for lot in lotsDeCartes:
-            self.calculScoreNbCartes(lot, '-')    #score du nb de carte dans un lot joue
-            self.calculScoreUnLot(lot, '-')           #score du tableau scoreUnLot
+            self.calculScoreNbCartes(lot, '-', joueur)    #score du nb de carte dans un lot joue
+            self.calculScoreUnLot(lot, '-', joueur)           #score du tableau scoreUnLot
             for carte in lot:
-                self.calculScoreRougeNoir(carte, '-')    #score du tableau scoreCarte
-                self.calculScoreParite(carte, '-')
-                self.calculScoreFigure(carte, '-')
-                self.calculScoreNumero(carte, '-')
+                self.calculScoreRougeNoir(carte, '-', joueur)    #score du tableau scoreCarte
+                self.calculScoreParite(carte, '-', joueur)
+                self.calculScoreFigure(carte, '-', joueur)
+                self.calculScoreNumero(carte, '-', joueur)
             if premierLot == 1:
                 premierLot = 0
                 ancienLot = lot
             else:
-                self.calculScoreSommeNumero(lot, ancienLot, '-')
+                self.calculScoreSommeNumero(lot, ancienLot, '-', joueur)
                 ancienLot = lot
 
 
 
-    def choisirCartes(self):
+    def choisirCartes(self, cartes):
+        main = [cartes]
+        self.analyseBonneCartes(main, 1)
+        self.analyseMauvaiseCartes(main, 1)
         return
 
 
 
-    def calculScoreRougeNoir(self, carte, sens):
+    def calculScoreRougeNoir(self, carte, sens, tableau):
+        scoreCartes = [0,0]
         if (carte['color'] == 'D') or (carte['color'] == 'H'):
             if sens == '+':
-                self.scoreCartes[0] += 1
+                scoreCartes[0] += 1
             elif sens == '-':
-                self.scoreCartes[0] -= 1
+                scoreCartes[0] -= 1
         elif (carte['color'] == 'C') or (carte['color'] == 'S'):
             if sens == '+':
-                self.scoreCartes[1] += 1
+                scoreCartes[1] += 1
             elif sens == '-':
-                self.scoreCartes[1] -= 1
+                scoreCartes[1] -= 1
+        for i in range(0, len(scoreCartes)):
+            if tableau == 0:
+                self.scoreCartesJoue[i] += scoreCartes[i]
+            elif tableau == 1:
+                self.scoreCartesMain[i] += scoreCartes[i]
 
 
 
-    def calculScoreParite(self, carte, sens):
-        if (carte['number'] % 2) == 0:
+    def calculScoreParite(self, carte, sens, tableau):
+        scoreCartes = [0,0,0,0]
+        valeur = int(carte['number'])
+        if (valeur % 2) == 0:
             if sens == '+':
-                self.scoreCartes[2] += 1
+                scoreCartes[2] += 1
             elif sens == '-':
-                self.scoreCartes[2] -= 1
-        elif (carte['number'] % 2) == 1:
+                scoreCartes[2] -= 1
+        elif (valeur % 2) == 1:
             if sens == '+':
-                self.scoreCartes[3] += 1
+                scoreCartes[3] += 1
             elif sens == '-':
-                self.scoreCartes[3] -= 1
+                scoreCartes[3] -= 1
+        for i in range(0, len(scoreCartes)):
+            if tableau == 0:
+                self.scoreCartesJoue[i] += scoreCartes[i]
+            elif tableau == 1:
+                self.scoreCartesMain[i] += scoreCartes[i]
 
 
-
-    def calculScoreFigure(self, carte, sens):
+    def calculScoreFigure(self, carte, sens, tableau):
+        scoreCartes = [0,0,0,0,0,0,0,0]
         if carte['color'] == 'C':
             if sens == '+':
-                self.scoreCartes[4] += 1
+                scoreCartes[4] += 1
             elif sens == '-':
-                self.scoreCartes[4] -= 1
+                scoreCartes[4] -= 1
         elif carte['color'] == 'H':
             if sens == '+':
-                self.scoreCartes[5] += 1
+                scoreCartes[5] += 1
             elif sens == '-':
-                self.scoreCartes[5] -= 1
+                scoreCartes[5] -= 1
         elif carte['color'] == 'S':
             if sens == '+':
-                self.scoreCartes[6] += 1
+                scoreCartes[6] += 1
             elif sens == '-':
-                self.scoreCartes[6] -= 1
+                scoreCartes[6] -= 1
         elif carte['color'] == 'D':
             if sens == '+':
-                self.scoreCartes[7] += 1
+                scoreCartes[7] += 1
             elif sens == '-':
-                self.scoreCartes[7] -= 1
+                scoreCartes[7] -= 1
+        for i in range(0, len(scoreCartes)):
+            if tableau == 0:
+                self.scoreCartesJoue[i] += scoreCartes[i]
+            elif tableau == 1:
+                self.scoreCartesMain[i] += scoreCartes[i]
 
 
 
-    def calculScoreNumero(self, carte, sens):
+    def calculScoreNumero(self, carte, sens, tableau):
+        scoreCartes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         if carte['number'] == 1:
             if sens == '+':
-                self.scoreCartes[8] += 1
+                scoreCartes[8] += 1
             elif sens == '-':
-                self.scoreCartes[8] -= 1
+                scoreCartes[8] -= 1
         elif carte['number'] == 2:
             if sens == '+':
-                self.scoreCartes[9] += 1
+                scoreCartes[9] += 1
             elif sens == '-':
-                self.scoreCartes[9] -= 1
+                scoreCartes[9] -= 1
         elif carte['number'] == 3:
             if sens == '+':
-                self.scoreCartes[10] += 1
+                scoreCartes[10] += 1
             elif sens == '-':
-                self.scoreCartes[10] -= 1
+                scoreCartes[10] -= 1
         elif carte['number'] == 4:
             if sens == '+':
-                self.scoreCartes[11] += 1
+                scoreCartes[11] += 1
             elif sens == '-':
-                self.scoreCartes[11] -= 1
+                scoreCartes[11] -= 1
         elif carte['number'] == 5:
             if sens == '+':
-                self.scoreCartes[12] += 1
+                scoreCartes[12] += 1
             elif sens == '-':
-                self.scoreCartes[12] -= 1
+                scoreCartes[12] -= 1
         elif carte['number'] == 6:
             if sens == '+':
-                self.scoreCartes[13] += 1
+                scoreCartes[13] += 1
             elif sens == '-':
-                self.scoreCartes[13] -= 1
+                scoreCartes[13] -= 1
         elif carte['number'] == 7:
             if sens == '+':
-                self.scoreCartes[14] += 1
+                scoreCartes[14] += 1
             elif sens == '-':
-                self.scoreCartes[14] -= 1
+                scoreCartes[14] -= 1
         elif carte['number'] == 8:
             if sens == '+':
-                self.scoreCartes[15] += 1
+                scoreCartes[15] += 1
             elif sens == '-':
-                self.scoreCartes[15] -= 1
+                scoreCartes[15] -= 1
         elif carte['number'] == 9:
             if sens == '+':
-                self.scoreCartes[16] += 1
+                scoreCartes[16] += 1
             elif sens == '-':
-                self.scoreCartes[16] -= 1
+                scoreCartes[16] -= 1
         elif carte['number'] == 10:
             if sens == '+':
-                self.scoreCartes[17] += 1
+                scoreCartes[17] += 1
             elif sens == '-':
-                self.scoreCartes[17] -= 1
+                scoreCartes[17] -= 1
         elif carte['number'] == 11:
             if sens == '+':
-                self.scoreCartes[18] += 1
+                scoreCartes[18] += 1
             elif sens == '-':
-                self.scoreCartes[18] -= 1
+                scoreCartes[18] -= 1
         elif carte['number'] == 12:
             if sens == '+':
-                self.scoreCartes[19] += 1
+                scoreCartes[19] += 1
             elif sens == '-':
-                self.scoreCartes[19] -= 1
+                scoreCartes[19] -= 1
         elif carte['number'] == 13:
             if sens == '+':
-                self.scoreCartes[20] += 1
+                scoreCartes[20] += 1
             elif sens == '-':
-                self.scoreCartes[20] -= 1
+                scoreCartes[20] -= 1
+        for i in range(0, len(scoreCartes)):
+            if tableau == 0:
+                self.scoreCartesJoue[i] += scoreCartes[i]
+            elif tableau == 1:
+                self.scoreCartesMain[i] += scoreCartes[i]
 
 
 
 
-    def calculScoreNbCartes(self, lot, sens):
+    def calculScoreNbCartes(self, lot, sens, tableau):
+        scoreNbCartes = [0,0,0,0,0]
         nbCarte = len(lot)
         if nbCarte == 1:
             if sens == '+':
-                self.scoreNbCartes[0] += 1
+                scoreNbCartes[0] += 1
             elif sens == '-':
-                self.scoreNbCartes[0] -= 1
+                scoreNbCartes[0] -= 1
         elif nbCarte == 2:
             if sens == '+':
-                self.scoreNbCartes[1] += 1
+                scoreNbCartes[1] += 1
             elif sens == '-':
-                self.scoreNbCartes[1] -= 1
+                scoreNbCartes[1] -= 1
         elif nbCarte == 3:
             if sens == '+':
-                self.scoreNbCartes[2] += 1
+                scoreNbCartes[2] += 1
             elif sens == '-':
-                self.scoreNbCartes[2] -= 1
+                scoreNbCartes[2] -= 1
         elif nbCarte == 4:
             if sens == '+':
-                self.scoreNbCartes[3] += 1
+                scoreNbCartes[3] += 1
             elif sens == '-':
-                self.scoreNbCartes[3] -= 1
+                scoreNbCartes[3] -= 1
         elif nbCarte == 5:
             if sens == '+':
-                self.scoreNbCartes[4] += 1
+                scoreNbCartes[4] += 1
             elif sens == '-':
-                self.scoreNbCartes[4] -= 1
+                scoreNbCartes[4] -= 1
+        for i in range(0, len(scoreNbCartes)):
+            if tableau == 0:
+                self.scoreNbCartesJoue[i] += scoreNbCartes[i]
+            elif tableau == 1:
+                self.scoreNbCarteMain[i] += scoreNbCartes[i]
 
 
-
-    def calculScoreUnLot(self, lot, sens):
-        self.calculScoreCarteIdentique(lot, sens)
-        self.calculScoreSuite(lot, sens)
-        self.calculScoreCouleur(lot, sens)
+    def calculScoreUnLot(self, lot, sens, tableau):
+        self.calculScoreCarteIdentique(lot, sens, tableau)
+        self.calculScoreSuite(lot, sens, tableau)
+        self.calculScoreCouleur(lot, sens, tableau)
 
 
 
     #Determine si un double, triple... doit etre joue
-    def calculScoreCarteIdentique(self, lot, sens):
+    def calculScoreCarteIdentique(self, lot, sens, tableau):
+        scoreUnLot = [0,0,0,0]
         compteur = 1
         premiereCarte = 1
         ancienneCarte = 0
@@ -294,28 +390,34 @@ class Joueur:
                 ancienneCarte == carte
         if compteur == 1:
             if sens == '+':
-                self.scoreUnLot[0] += 1
+                scoreUnLot[0] += 1
             elif sens == '-':
-                self.scoreUnLot[0] -= 1
+                scoreUnLot[0] -= 1
         elif compteur == 2:
             if sens == '+':
-                self.scoreUnLot[1] += 1
+                scoreUnLot[1] += 1
             elif sens == '-':
-                self.scoreUnLot[1] -= 1
+                scoreUnLot[1] -= 1
         elif compteur == 3:
             if sens == '+':
-                self.scoreUnLot[2] += 1
+                scoreUnLot[2] += 1
             elif sens == '-':
-                self.scoreUnLot[2] -= 1
+                scoreUnLot[2] -= 1
         elif compteur == 4:
             if sens == '+':
-                self.scoreUnLot[3] += 1
+                scoreUnLot[3] += 1
             elif sens == '-':
-                self.scoreUnLot[3] -= 1
+                scoreUnLot[3] -= 1
+        for i in range(0, len(scoreUnLot)):
+            if tableau == 0:
+                self.scoreUnLotJoue[i] += scoreUnLot[i]
+            elif tableau == 1:
+                self.scoreUnLotMain[i] += scoreUnLot[i]
 
 
 
-    def calculScoreSuite(self, lot, sens):
+    def calculScoreSuite(self, lot, sens, tableau):
+        scoreUnLot = [0,0,0,0,0,0]
         suiteCroissante = 1
         suiteDecroissante = 1
         premiereCarte = 1
@@ -332,21 +434,28 @@ class Joueur:
                 ancienneCarte == carte
         if suiteCroissante == 1:
             if sens == '+':
-                self.scoreUnLot[4] += 1
+                scoreUnLot[4] += 1
             elif sens == '-':
-                self.scoreUnLot[4] -= 1
+                scoreUnLot[4] -= 1
         if suiteDecroissante == 1:
             if sens == '+':
-                self.scoreUnLot[5] += 1
+                scoreUnLot[5] += 1
             elif sens == '-':
-                self.scoreUnLot[5] -= 1
+                scoreUnLot[5] -= 1
+        for i in range(0, len(scoreUnLot)):
+            if tableau == 0:
+                self.scoreUnLotJoue[i] += scoreUnLot[i]
+            elif tableau == 1:
+                self.scoreUnLotMain[i] += scoreUnLot[i]
 
 
-    def calculScoreCouleur(self, lot, sens):
+
+    def calculScoreCouleur(self, lot, sens, tableau):
+        scoreUnLot = [0,0,0,0,0,0,0,0]
         couleurDifferente = 1
         memeCouleur = 1
         premiereCarte = 1
-        ancienneCouleur = 0
+        ancienneCouleur = 1
         couleur = 0
         for carte in lot:
             if premiereCarte == 1:
@@ -366,34 +475,51 @@ class Joueur:
                     couleurDifferente = 0
             if couleurDifferente == 1:
                 if sens == '+':
-                    self.scoreUnLot[6] += 1
+                    scoreUnLot[6] += 1
                 elif sens == '-':
-                    self.scoreUnLot[6] -= 1
+                    scoreUnLot[6] -= 1
             if memeCouleur == 1:
                 if sens == '+':
-                    self.scoreUnLot[7] += 1
+                    scoreUnLot[7] += 1
                 elif sens == '-':
-                    self.scoreUnLot[7] -= 1
+                    scoreUnLot[7] -= 1
+        for i in range(0, len(scoreUnLot)):
+            if tableau == 0:
+                self.scoreUnLotJoue[i] += scoreUnLot[i]
+            elif tableau == 1:
+                self.scoreUnLotMain[i] += scoreUnLot[i]
 
-    def calculScoreSommeNumero(self, lot, ancienLot, sens):
+
+    def calculScoreSommeNumero(self, lot, ancienLot, sens, tableau):
+        sommeCarte = [0,0,0,0]
         total = 0
         totalAncien = 0
         for carte in lot:
-            total += carte['number']
+            total += int(carte['number'])
         for carte in ancienLot:
-            totalAncien += carte['number']
+            totalAncien += int(carte['number'])
         if total == totalAncien:
-            if self.sommeCarte[0] == total:
+            if sommeCarte[0] == total:
                 if sens == '+':
-                    self.sommeCarte[1] += 1
+                    sommeCarte[1] += 1
                 elif sens == '-':
-                    self.sommeCarte[1] -= 1
+                    sommeCarte[1] -= 1
             else:
                 if sens == '+':
-                    self.sommeCarte[1] = 1
+                    sommeCarte[1] = 1
                 elif sens == '-':
-                    self.sommeCarte[1] = -1
-            self.sommeCarte[0] = total
-        if self.sommeCarte[1] > self.sommeCarte[3]:
-            self.sommeCarte[3] = self.sommeCarte[1]
-            self.sommeCarte[2] = self.sommeCarte[0]
+                    sommeCarte[1] = -1
+            sommeCarte[0] = total
+        if sommeCarte[1] > sommeCarte[3]:
+            sommeCarte[3] = sommeCarte[1]
+            sommeCarte[2] = sommeCarte[0]
+        for i in range(0, len(sommeCarte)):
+            if tableau == 0:
+                self.sommeCarteJoue[i] += sommeCarte[i]
+            elif tableau == 1:
+                self.sommeCarteMain[i] += sommeCarte[i]
+
+
+if __name__ == '__main__':
+    m = Joueur()
+    m.jouerCartes('bidon')
