@@ -129,13 +129,14 @@ class Joueur:
         return [{"color":"C","number":"3"},{"color":"D","number":"4"},{"color":"D","number":"4"},{"color":"S","number":"1"},{"color":"H","number":"8"}]
 
     def jouerCartes(self, detailsPartie):
-        partie = json.loads(detailsPartie)
+        #partie = json.loads(detailsPartie)
         #self.analyseBonneCartes(partie['bonnes-cartes'])
         self.analyseBonneCartes(self.bonneCarte(), 0)
         #self.analyseMauvaiseCartes(partie['mauvaises-cartes'])
         self.analyseMauvaiseCartes(self.mauvaiseCarte(), 0)
 
-        cartes = self.choisirCartes(partie['deckJ1'])
+        #cartes = self.choisirCartes(partie['deckJ1'])
+        cartes = self.choisirCartes(self.main())
         if cartes == None:
             return 'prophete'
         return cartes
@@ -180,9 +181,193 @@ class Joueur:
 
     def choisirCartes(self, cartes):
         main = [cartes]
+        carteAJoue = []
+        carteTmp = 0
+        color = 0
         self.analyseBonneCartes(main, 1)
         self.analyseMauvaiseCartes(main, 1)
-        return
+        rangNb = 0
+        valNb = 0
+        rangLot = 0
+        valLot = 0
+        for i in range (0,4):
+            if valNb < self.scoreNbCartesJoue[i]:
+                valNb = self.scoreNbCartesJoue[i]
+                rangNb = i
+        if rangNb == 0:
+            if self.scoreCartesJoue[4] <= 0:
+                if self.scoreCartesJoue[5] <= 0:
+                    if self.scoreCartesJoue[6] <= 0:
+                        color = 'D'
+                    elif self.scoreCartesJoue[7] <= 0:
+                        color = 'S'
+                elif self.scoreCartesJoue[6] <= 0:
+                    if self.scoreCartesJoue[7] <= 0:
+                        color = 'H'
+            elif self.scoreCartesJoue[5] <= 0:
+                if self.scoreCartesJoue[6] <= 0:
+                    if self.scoreCartesJoue[7] <= 0:
+                        color = 'C'
+            if color != 0:
+                for q in range(0,5):
+                    if main[0][q]['color'] == color:
+                        return main[0][q]
+                    else:
+                        return main[0][2]
+            if self.scoreCartesJoue[0] > self.sommeCarteJoue[1]:
+                for carte in main[0]:
+                    if (carte['color'] == 'D') or (carte['color'] == 'H'):
+                        carteTmp += carte
+            elif self.scoreCartesJoue[0] < self.sommeCarteJoue[1]:
+                for carte in main[0]:
+                    if (carte['color'] == 'C') or (carte['color'] == 'S'):
+                        carteTmp += carte
+            for p in len(carteTmp):
+                if main[0][p]['color'] == color:
+                    return main[0][p]['color']
+            return main[0][2]
+        if rangNb == 1:
+            for a in range(0,1):
+                if valLot < self.scoreUnLotJoue[a]:
+                    valLot = self.scoreUnLotJoue[a]
+                    rangLot = a
+            if rangLot == 0:
+                if self.scoreCartesJoue[4] <= 0:
+                    if self.scoreCartesJoue[5] <= 0:
+                        if self.scoreCartesJoue[6] <= 0:
+                            color = 'D'
+                        elif self.scoreCartesJoue[7] <= 0:
+                            color = 'S'
+                    elif self.scoreCartesJoue[6] <= 0:
+                        if self.scoreCartesJoue[7] <= 0:
+                            color = 'H'
+                elif self.scoreCartesJoue[5] <= 0:
+                    if self.scoreCartesJoue[6] <= 0:
+                        if self.scoreCartesJoue[7] <= 0:
+                            color = 'C'
+                if color != 0:
+                    ind = 0
+                    while len(carteAJoue) != 2:
+                        if main[0][ind]['color'] == color:
+                            carteAJoue += main[0][ind]
+                    return carteAJoue
+                else:
+                    carteAJoue += main[0][0]
+                    carteAJoue += main[0][1]
+                    return  carteAJoue
+                if self.scoreCartesJoue[0] > self.sommeCarteJoue[1]:
+                    for carte in main[0]:
+                        if (carte['color'] == 'D') or (carte['color'] == 'H'):
+                            carteTmp += carte
+                elif self.scoreCartesJoue[0] < self.sommeCarteJoue[1]:
+                    for carte in main[0]:
+                        if (carte['color'] == 'C') or (carte['color'] == 'S'):
+                            carteTmp += carte
+                for p in len(carteTmp):
+                    max = len(carteTmp)
+                    j = 0
+                    while j < max:
+                        if carteTmp[p]['number'] == carteTmp[j]['number']:
+                            carteAJoue += carteTmp[p]
+                            carteAJoue += carteTmp[j]
+                        j += 1
+                if len(carteAJoue) != 0:
+                    return carteAJoue
+                else:
+                    carteAJoue = main[0][0]
+                    carteAJoue += main[0][1]
+                    return carteAJoue
+            if rangLot == 1:
+                if self.scoreCartesJoue[4] <= 0:
+                    if self.scoreCartesJoue[5] <= 0:
+                        if self.scoreCartesJoue[6] <= 0:
+                            color = 'D'
+                        elif self.scoreCartesJoue[7] <= 0:
+                            color = 'S'
+                    elif self.scoreCartesJoue[6] <= 0:
+                        if self.scoreCartesJoue[7] <= 0:
+                            color = 'H'
+                elif self.scoreCartesJoue[5] <= 0:
+                    if self.scoreCartesJoue[6] <= 0:
+                        if self.scoreCartesJoue[7] <= 0:
+                            color = 'C'
+                if color != 0:
+                    for y in range(0,4):
+                        j = 0
+                        while j < 4:
+                            if main[0][y]['number'] == main[0][j]['number']:
+                                if main[0][y]['color'] == color and main[0][j]['color'] == color:
+                                    carteAJoue += main[0][y]
+                                    carteAJoue += main[0][j]
+                            j += 1
+                    if len(carteAJoue) != 0:
+                        return carteAJoue
+                    else:
+                        carteAJoue = main[0][0]
+                        carteAJoue += main[0][1]
+                        return carteAJoue
+                if self.scoreCartesJoue[0] > self.sommeCarteJoue[1]:
+                    for carte in main[0]:
+                        if (carte['color'] == 'D') or (carte['color'] == 'H'):
+                            carteTmp += carte
+                elif self.scoreCartesJoue[0] < self.sommeCarteJoue[1]:
+                    for carte in main[0]:
+                        if (carte['color'] == 'C') or (carte['color'] == 'S'):
+                            carteTmp += carte
+                for t in len(carteTmp):
+                    max = len(carteTmp)
+                    j = 0
+                    while j < max:
+                        if carteTmp[t]['number'] == carteTmp[j]['number']:
+                            carteAJoue += carteTmp[t]
+                            carteAJoue += carteTmp[j]
+                        j += 1
+                if len(carteAJoue) != 0:
+                    return carteAJoue
+                else:
+                    carteAJoue = main[0][0]
+                    carteAJoue += main[0][1]
+                    return carteAJoue
+        if rangNb == 2:
+            for a in range(0,2):
+                if valLot < self.scoreUnLotJoue[a]:
+                    valLot = self.scoreUnLotJoue[a]
+                    rangLot = a
+            if rangLot == 1 or rangLot == 0:
+                if self.scoreUnLotMain[2] != 0:
+                    for z in range(0, 3):
+                        j = 0
+                        while j < 4:
+                            if main[0][z]['number'] == main[0][j]['number']:
+                                carteAJoue += main[0][z]
+                                carteAJoue += main[0][j]
+                            j += 1
+                    if len(carteAJoue) != 0:
+                        return carteAJoue
+                    else:
+                        carteAJoue = main[0][0]
+                        carteAJoue += main[0][1]
+                        return carteAJoue
+                else:
+                    return ''
+            if rangLot == 2:
+                if self.scoreUnLotMain[2] != 0:
+                    for r in range(0, 3):
+                        j = 0
+                        while j < 4:
+                            if main[0][r]['number'] == main[0][j]['number']:
+                                carteAJoue += main[0][r]
+                                carteAJoue += main[0][j]
+                            j += 1
+                    if len(carteAJoue) == 3:
+                        return carteAJoue
+                    else:
+                        carteAJoue = main[0][0]
+                        carteAJoue += main[0][1]
+                        carteAJoue += main[0][2]
+                        return carteAJoue
+                else:
+                    return ''
 
 
 
@@ -364,7 +549,7 @@ class Joueur:
             if tableau == 0:
                 self.scoreNbCartesJoue[i] += scoreNbCartes[i]
             elif tableau == 1:
-                self.scoreNbCarteMain[i] += scoreNbCartes[i]
+                self.scoreNbCartesMain[i] += scoreNbCartes[i]
 
 
     def calculScoreUnLot(self, lot, sens, tableau):
