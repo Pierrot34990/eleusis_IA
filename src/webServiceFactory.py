@@ -6,8 +6,8 @@ import requests, json
 class WebServiceFactory:
 
     def __init__(self):
-        self.URL_CONNECT = "http://127.0.0.1:8000/app_dev.php/"
-        self.URL_RULE = "http://127.0.0.1:8000/app_dev.php/god-choose-rules/"
+        self.URL_CONNECT = "http://127.0.0.1:8000/"
+        self.URL_RULE = "http://127.0.0.1:8000/god-choose-rules/"
 
     def webServiceConnect(self):
         response = requests.get(self.URL_CONNECT + 'connect/nao')
@@ -31,4 +31,10 @@ class WebServiceFactory:
 
         response = requests.post(self.URL_RULE + json.dumps(rule))
         print("URL  = " + str(self.URL_RULE + json.dumps(rule)))
+        return response
+
+    def webServiceSendCards(self, cartes):
+        print(json.dumps(cartes))
+        response = requests.post('http://127.0.0.1:8000/player-choose-cards/' + json.dumps(cartes))
+        print(response)
         return response

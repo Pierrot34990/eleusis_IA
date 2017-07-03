@@ -5,6 +5,8 @@ import json
 
 class Joueur:
 
+    premierTour = 1
+
     #nombre de cartes dans une main jouée
     lotDe1 = 0
     lotDe2 = 0
@@ -181,6 +183,9 @@ class Joueur:
 
     def choisirCartes(self, cartes):
         main = [cartes]
+        if self.premierTour == 1:
+            return main[0][1]
+            self.premierTour == 0
         carteAJoue = []
         carteTmp = 0
         color = 0

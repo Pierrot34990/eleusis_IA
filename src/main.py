@@ -53,7 +53,7 @@ class Main:
                                 #self.checkCards(self, result['partie']['selectedCards'])
                         else:
                             print ("Jouer en tant que joueur .")
-                            self.playCards(self, result['partie'])
+                            self.playCards(result['partie'])
                     else:
                         print("C'est pas à moi de jouer !!")
 
@@ -81,7 +81,10 @@ class Main:
     def playCards(self, detailsPartie):
         IA = Joueur()
         cards = IA.jouerCartes(detailsPartie)
-        return cards
+        w = WebServiceFactory()
+        response = w.webServiceSendCards(cards)
+        print(response)
+        return response
 
     def getCardsTest(self):
         return json.dumps({'color': 'S','number': 2})
